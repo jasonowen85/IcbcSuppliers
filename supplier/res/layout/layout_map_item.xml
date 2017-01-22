@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/map_tip"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="12dp"
+        android:text="需要转发给该工程师吗?"
+        android:textColor="@color/color_blue_00acee"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="6dp"
+        android:drawableLeft="@drawable/map_name"
+        android:drawablePadding="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/color_black_4e4e4e"
+        android:text="1111" />
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:drawableLeft="@drawable/map_phone"
+        android:drawablePadding="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/color_black_4e4e4e"
+        android:text="1111" />
+    <TextView
+        android:id="@+id/jobnum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="6dp"
+        android:drawableLeft="@drawable/map_jobnum"
+        android:drawablePadding="8dp"
+        android:textSize="14sp"
+        android:textColor="@color/color_black_4e4e4e"
+        android:text="1111" />
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/nim_team_create_btn_selector"
+        android:text="确认"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</LinearLayout>
