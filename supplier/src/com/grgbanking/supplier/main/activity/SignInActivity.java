@@ -90,7 +90,7 @@ public class SignInActivity extends UI {
             //请求定位权限；
             String[] perms = {PermissionUtils.PERMISSION_ACCESS_COARSE_LOCATION, PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION};
             if(PermissionUtils.lacksPermissions(this, perms)){
-                ActivityCompat.requestPermissions(SignInActivity.this, perms, RESULT_CODE_STARTCAMERA);
+                ActivityCompat.requestPermissions(SignInActivity.this, perms, PermissionUtils.CODE_ACCESS_FINE_LOCATION);
             }
 
         }
@@ -251,12 +251,14 @@ public class SignInActivity extends UI {
     @Override
     public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
         switch(permsRequestCode) {
-            case RESULT_CODE_STARTCAMERA:
+            case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
                 boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 if (cameraAccepted) {
                     //
                 } else {
-                    Toast.makeText(SignInActivity.this, "请到设置界面 开启 定位权限", Toast.LENGTH_SHORT).show();
+                    PermissionUtils.confirmActivityPermission(this, permissions,
+                            PermissionUtils.CODE_ACCESS_FINE_LOCATION, getString(R.string.location), false);
+//                    Toast.makeText(SignInActivity.this, "请到设置界面 开启 定位权限", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
