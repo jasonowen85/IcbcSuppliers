@@ -7,6 +7,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -39,6 +41,7 @@ import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.MD5;
 import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.session.module.PermissionResult;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -50,6 +53,9 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 登录/注册界面
  * <p>
@@ -58,6 +64,7 @@ import org.json.JSONObject;
 public class LoginActivity extends UI implements OnKeyListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final int PERMISSION_REQUEST_CODE = 1003;
     private static final String KICK_OUT = "KICK_OUT";
     public userRole[] userRoles;
     public CharSequence[] userRolenames;
@@ -97,7 +104,17 @@ public class LoginActivity extends UI implements OnKeyListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
         if (Build.VERSION.SDK_INT >= 23) {
-            PermissionUtils.requestMultiPermissions(this, mPermissionGrant);
+            if(PermissionUtils.lacksPermissions(this, PermissionUtils.requestPermissions)){
+                List<String> requestPermission = new ArrayList<String>();
+                for(String permission : PermissionUtils.requestPermissions){
+                    if(lacksPermission(permission)){
+                        requestPermission.add(permission);
+                    }
+                }
+                ActivityCompat.requestPermissions(this,
+                        requestPermission.toArray(new String[requestPermission.size()]), PERMISSION_REQUEST_CODE); // 请求权限
+                requestPermission.clear();
+            }
         }
         ToolBarOptions options = new ToolBarOptions();
         options.isNeedNavigate = false;
@@ -140,6 +157,14 @@ public class LoginActivity extends UI implements OnKeyListener {
 //
 //        return super.onKeyDown(keyCode, event);
 //    }
+
+    // 判断是否缺少权限
+    private boolean lacksPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) ==
+                PackageManager.PERMISSION_DENIED;
+    }
+
+
     private PermissionUtils.PermissionGrant mPermissionGrant = new PermissionUtils.PermissionGrant() {
         @Override
         public void onPermissionGranted(int requestCode) {

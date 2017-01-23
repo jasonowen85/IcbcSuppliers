@@ -85,6 +85,16 @@ public class SignInActivity extends UI {
         //id = "11";
         LogUtil.e("SignInActivity","id=="+id);
         initView();
+        //定位权限 确认一下；
+        if (Build.VERSION.SDK_INT >= 23) {
+            //请求定位权限；
+            String[] perms = {PermissionUtils.PERMISSION_ACCESS_COARSE_LOCATION, PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION};
+            if(PermissionUtils.lacksPermissions(this, perms)){
+                ActivityCompat.requestPermissions(SignInActivity.this, perms, RESULT_CODE_STARTCAMERA);
+            }
+
+        }
+
     }
 
     private void initView() {
@@ -176,12 +186,6 @@ public class SignInActivity extends UI {
         mLocationClient.registerLocationListener(myListener);
         initLocation();
         mLocationClient.start();
-        //定位权限 确认一下；
-        if (Build.VERSION.SDK_INT >= 23) {
-            //请求定位权限；
-            String[] perms = {PermissionUtils.PERMISSION_ACCESS_COARSE_LOCATION, PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(SignInActivity.this, perms, RESULT_CODE_STARTCAMERA);
-        }
 
     }
 
