@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,10 +188,24 @@ public class MessageFragment extends TFragment implements ModuleProxy {
         switch(requestCode) {
             case PermissionUtils.CODE_RECORD_AUDIO:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //开始录音
-                    inputPanel.startRecordAudio();
-                } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {//第一次点击拒绝授权
-                    PermissionUtils.confirmFragmentPermission(this, permissions, PermissionUtils.CODE_RECORD_AUDIO, getString(R.string.recordAudio));
+                    if (ContextCompat.checkSelfPermission(getActivity(), PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE) ==
+                            PackageManager.PERMISSION_DENIED) {
+                        PermissionUtils.confirmActivityPermission(getActivity(), new String[]{PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE},
+                                PermissionUtils.CODE_RECORD_AUDIO, getString(R.string.readSDcard), false);
+                    } else {//开始录音
+                        inputPanel.startRecordAudio();
+                    }
+
+                } else {//第一次点击拒绝授权
+                    if (ContextCompat.checkSelfPermission(getActivity(), PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE) ==
+                            PackageManager.PERMISSION_DENIED) {
+                        //重新申请 sd 录音权限
+                        PermissionUtils.confirmActivityPermission(getActivity(), permissions, PermissionUtils.CODE_RECORD_AUDIO, getString(R.string.recordAudio), false);
+                    } else {
+                        //只申请  录音权限
+                        PermissionUtils.confirmActivityPermission(getActivity(), new String[]{PermissionUtils.PERMISSION_RECORD_AUDIO},
+                                PermissionUtils.CODE_RECORD_AUDIO, getString(R.string.recordAudio), false);
+                    }
                 }
                 break;
 

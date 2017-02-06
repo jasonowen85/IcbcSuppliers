@@ -575,19 +575,14 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
 
                     if (Build.VERSION.SDK_INT >= 23) {
                         //录音权限；这里需要 写入权限  双权限
-                        if (ContextCompat.checkSelfPermission(container.activity, PermissionUtils.PERMISSION_RECORD_AUDIO) ==
-                                PackageManager.PERMISSION_DENIED) {
-                            if(ContextCompat.checkSelfPermission(container.activity, PermissionUtils.PERMISSION_READ_EXTERNAL_STORAGE) ==
-                                    PackageManager.PERMISSION_DENIED){
-                                FragmentCompat.requestPermissions(mFragment,
-                                        new String[]{PermissionUtils.PERMISSION_RECORD_AUDIO, PermissionUtils.PERMISSION_READ_EXTERNAL_STORAGE}
-                                        , PermissionUtils.CODE_RECORD_AUDIO);
+                        String[] needPermissions = new String[]{PermissionUtils.PERMISSION_RECORD_AUDIO, PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE};
+                        if (PermissionUtils.lacksPermissions(container.activity, needPermissions)) {
+                            if (PermissionUtils.lacksPermission(container.activity, PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)) {
+                                FragmentCompat.requestPermissions(mFragment, needPermissions, PermissionUtils.CODE_RECORD_AUDIO);
                             } else {
                                 FragmentCompat.requestPermissions(mFragment,
-                                        new String[]{PermissionUtils.PERMISSION_RECORD_AUDIO}
-                                        , PermissionUtils.CODE_RECORD_AUDIO);
+                                        new String[]{PermissionUtils.PERMISSION_RECORD_AUDIO}, PermissionUtils.CODE_RECORD_AUDIO);
                             }
-
                         } else {
                             onStartAudioRecord();
                         }
