@@ -56,7 +56,6 @@ public class UPlayer implements IVoiceManager, MediaPlayer.OnCompletionListener,
         Message msg = mHandler.obtainMessage();
         msg.what = 1;
         mHandler.sendMessage(msg);
-        stop();
     }
 
     @Override
@@ -73,7 +72,6 @@ public class UPlayer implements IVoiceManager, MediaPlayer.OnCompletionListener,
 //        mPlayer.stop();
 //        mPlayer.release();
 //        mPlayer = null;
-//        mPlayer.seekTo(0);
         mPlayer.reset();
         return false;
     }
