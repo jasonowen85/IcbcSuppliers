@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
@@ -209,6 +210,14 @@ public class LoginActivity extends UI implements OnKeyListener {
 
             @Override
             public void onClick(View v) {
+                if(null != loginAccountEdit && loginAccountEdit.isFocused() ){
+//                    getRoles(loginAccountEdit.getText().toString());
+                    loginAccountEdit.clearFocus();
+//                    loginAccountEdit.setNextFocusDownId(R.id.edit_login_password);
+                    if(null == userRolenames){
+                        return;
+                    }
+                }
                 login2server();
                 //login2test();
             }
@@ -230,19 +239,22 @@ public class LoginActivity extends UI implements OnKeyListener {
         loginRoleEdit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                final CommonDialog dialog = DialogHelper.getPinterestDialogCancelable(LoginActivity.this);
-                dialog.setTitle("选择角色");
-                dialog.setNegativeButton(R.string.cancel, null);
-                dialog.setItemsWithoutChk(userRolenames, new AdapterView.OnItemClickListener() {
+                if (null != userRolenames && userRolenames.length > 1){
+                    final CommonDialog dialog = DialogHelper.getPinterestDialogCancelable(LoginActivity.this);
+                    dialog.setTitle("选择角色");
+                    dialog.setNegativeButton(R.string.cancel, null);
+                    dialog.setItemsWithoutChk(userRolenames, new AdapterView.OnItemClickListener() {
 
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        loginRoleEdit.setText(parent.getAdapter().getItem(position).toString());
-                        Preferences.saveUserRole(userRoles[position].getCode());
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            loginRoleEdit.setText(parent.getAdapter().getItem(position).toString());
+                            Preferences.saveUserRole(userRoles[position].getCode());
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                }
+
             }
         });
 
@@ -254,7 +266,12 @@ public class LoginActivity extends UI implements OnKeyListener {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    //  getRoles(loginAccountEdit.getText().toString());
+                    if(null != userRolenames && userRolenames.length != 0){
+                        userRolenames  = null;
+                        if(loginRoleEdit.getVisibility() == View.VISIBLE){
+                            loginRoleEdit.setVisibility(View.GONE);
+                        }
+                    }
                 } else {
                     getRoles(loginAccountEdit.getText().toString());
                 }
@@ -344,6 +361,8 @@ public class LoginActivity extends UI implements OnKeyListener {
                             });
                             dialog.show();
                         }
+                    } else{
+                        Toast.makeText(LoginActivity.this ,response.getString("ret_msg").toString(), Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

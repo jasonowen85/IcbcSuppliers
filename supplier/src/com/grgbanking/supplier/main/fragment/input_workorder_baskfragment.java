@@ -5,7 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v13.app.FragmentCompat;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import com.grgbanking.supplier.R;
 import com.grgbanking.supplier.api.ApiHttpClient;
 import com.grgbanking.supplier.api.ServerApi;
 import com.grgbanking.supplier.common.bean.workOrder;
+import com.grgbanking.supplier.common.util.PermissionUtils;
 import com.grgbanking.supplier.common.util.sys.ImageUtils;
 import com.grgbanking.supplier.common.util.widget.ListViewCompat;
 import com.grgbanking.supplier.config.preference.Preferences;
@@ -148,6 +152,9 @@ public class input_workorder_baskfragment extends BaseFragment implements
     }
 
     protected void getData(final int what) {
+        if(what == ListViewCompat.REFRESH  && currentPage != 1){
+            currentPage =1;
+        }
         ServerApi.getWorkOrder(Preferences.getUserid(), currentPage, 10, mType, Return(NimApplication.lastBranchId), Return(NimApplication.lastStarttime), Return(NimApplication.lastEndtime), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -156,7 +163,8 @@ public class input_workorder_baskfragment extends BaseFragment implements
                     JSONObject jsonObject = response.optJSONObject("lists");
                     JSONArray jsonArr = jsonObject.optJSONArray("lists");
                     int totalItem = jsonObject.optInt("total");
-                    int totalPager = totalItem/10;
+                    allCount= totalItem;
+                    int totalPager = totalItem%10 == 0 ? totalItem/10 : totalItem/10 + 1  ;
                     List<workOrder> orders = new ArrayList<workOrder>();
                     for (int i = 0; i < jsonArr.length(); i++) {
                         workOrder order = new workOrder();
@@ -194,11 +202,15 @@ public class input_workorder_baskfragment extends BaseFragment implements
                     } else if (ListViewCompat.LOAD == what) {
                         datas.addAll(orders);
                         listView1.onLoadComplete();
-                        currentPage++;
                     }
+                    LogUtil.i("jiang", "当前请求页 = " + currentPage + "总datas size=" + datas.size() +
+                            "   总totalItem = " + totalItem + "  本次请求获取到的数据条数= " + orders.size() + "  总页数= " + totalPager);
                     if(totalPager == currentPage){
                         listView1.setNoNextPagerDatas();
                     } else {
+                        if(totalPager > 1){
+                            currentPage++;
+                        }
                         listView1.setResultSize(orders.size());
                     }
 
@@ -545,9 +557,25 @@ public class input_workorder_baskfragment extends BaseFragment implements
                             vHolder.iv_action2.setOnClickListener(new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    //服务工程师接单
-                                    comfirmOrder(datas.get(position).getId(), Preferences.getUserid());
-                                    signLine(datas.get(position).getId(), Preferences.getUserid());
+                                    //定位权限 确认一下；
+                                    if (Build.VERSION.SDK_INT >= 23) {
+                                        //请求定位权限；
+                                        String[] perms = {PermissionUtils.PERMISSION_ACCESS_COARSE_LOCATION, PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION};
+                                        if(PermissionUtils.lacksPermissions(getActivity(), perms)){
+                                            ActivityCompat.requestPermissions(getActivity(), perms, PermissionUtils.CODE_ACCESS_FINE_LOCATION);
+                                        } else {
+                                            //服务工程师接单
+                                            comfirmOrder(datas.get(position).getId(), Preferences.getUserid());
+                                            signLine(datas.get(position).getId(), Preferences.getUserid());
+                                        }
+
+                                    } else {
+                                        //服务工程师接单
+                                        comfirmOrder(datas.get(position).getId(), Preferences.getUserid());
+                                        signLine(datas.get(position).getId(), Preferences.getUserid());
+                                    }
+
+
                                 }
                             });
                         } else {

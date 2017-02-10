@@ -1,7 +1,9 @@
 package com.grgbanking.supplier.main.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import com.grgbanking.supplier.R;
 import com.grgbanking.supplier.api.ServerApi;
 import com.grgbanking.supplier.common.dialog.CommonDialog;
 import com.grgbanking.supplier.common.dialog.DialogHelper;
+import com.grgbanking.supplier.common.util.PermissionUtils;
 import com.grgbanking.supplier.config.preference.Preferences;
 import com.grgbanking.supplier.main.fragment.dropbox_bank_fragment;
 import com.grgbanking.supplier.main.fragment.dropbox_branch_fragment;
@@ -381,4 +384,22 @@ public class first_workorder_activity extends UI implements View.OnClickListener
         v.setEnabled(false);
         currentButton = v;
     }
+
+    /**
+     * Callback received when a permissions request has been completed.
+     */
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
+        switch(permsRequestCode) {
+            case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //什么都不做
+                } else {
+                    PermissionUtils.confirmActivityPermission(this,permissions,
+                            PermissionUtils.CODE_ACCESS_FINE_LOCATION, getString(R.string.location),false);
+                }
+                break;
+        }
+    }
+
 }

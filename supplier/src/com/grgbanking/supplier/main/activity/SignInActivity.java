@@ -254,7 +254,7 @@ public class SignInActivity extends UI {
             case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
                 boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 if (cameraAccepted) {
-                    //
+                    initView();
                 } else {
                     PermissionUtils.confirmActivityPermission(this, permissions,
                             PermissionUtils.CODE_ACCESS_FINE_LOCATION, getString(R.string.location), false);

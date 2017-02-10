@@ -29,7 +29,8 @@ public class ListViewCompat extends ListView implements OnScrollListener {
 
     // 区分PULL和RELEASE的距离的大小
     private static final int SPACE = 20;
-
+    //下拉的固定高度；
+    public static final int REFREDH_HEIGHT = 110;
     // 定义header的四种状态和当前状态
     private static final int NONE = 0;
     private static final int PULL = 1;
@@ -262,6 +263,9 @@ public class ListViewCompat extends ListView implements OnScrollListener {
         int tmpY = (int) ev.getY();
         int space = tmpY - startY;
         int topPadding = space - headerContentHeight;
+        if(topPadding >= REFREDH_HEIGHT){
+            topPadding = REFREDH_HEIGHT ;
+        }
         switch (state) {
             case NONE:
                 if (space > 0) {
@@ -270,7 +274,11 @@ public class ListViewCompat extends ListView implements OnScrollListener {
                 }
                 break;
             case PULL:
-                topPadding(topPadding);
+                if(topPadding >= REFREDH_HEIGHT){
+                    topPadding(REFREDH_HEIGHT);
+                } else{
+                    topPadding(topPadding);
+                }
                 if (scrollState == SCROLL_STATE_TOUCH_SCROLL
                         && space > headerContentHeight + SPACE) {
                     state = RELEASE;
@@ -330,7 +338,9 @@ public class ListViewCompat extends ListView implements OnScrollListener {
         }
 
     }
-
+    /**
+     * 下一页 没有新的数据了 也就是最后一页
+     */
     public void setNoNextPagerDatas() {
         isLoadFull = true;
         loadFull.setVisibility(View.VISIBLE);
