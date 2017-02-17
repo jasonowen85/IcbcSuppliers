@@ -11,7 +11,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -32,12 +35,14 @@ import com.grgbanking.supplier.common.photo.utils.Bimp;
 import com.grgbanking.supplier.common.photo.utils.BitmapUtils;
 import com.grgbanking.supplier.common.photo.utils.FileUtils;
 import com.grgbanking.supplier.common.photo.view.NoScrollGridView;
+import com.grgbanking.supplier.common.util.PermissionUtils;
 import com.grgbanking.supplier.common.util.sys.ImageUtils;
 import com.grgbanking.supplier.config.preference.Preferences;
 import com.grgbanking.supplier.login.LoginActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.StringUtil;
 import com.netease.nim.uikit.model.ToolBarOptions;
 
@@ -77,6 +82,10 @@ public class input_confirm_complete_activity extends UI {
         options.titleId = R.string.confirm_complete;
         setToolBar(R.id.toolbar, options);
         urllist = new ArrayList<String>();
+        if(null != Bimp.tempSelectBitmap){
+            Bimp.tempSelectBitmap.clear();
+        }
+
         getParams();
         InitView();
 
@@ -213,19 +222,19 @@ public class input_confirm_complete_activity extends UI {
             menuWindow.dismiss();
             switch (v.getId()) {
                 case R.id.item_popupwindows_camera:        //点击拍照按钮
-                    goCamera();
                     if (Build.VERSION.SDK_INT >= 23) {
-                        //请求摄像头权限；
-                        //请求摄像头权限；
                         String[] perms = {"android.permission.CAMERA"};
-                        ActivityCompat.requestPermissions(input_confirm_complete_activity.this, perms, RESULT_CODE_STARTCAMERA);
+                        if (PermissionUtils.lacksPermissions(input_confirm_complete_activity.this, perms)) {
+                            ActivityCompat.requestPermissions(input_confirm_complete_activity.this, perms, PermissionUtils.CODE_CAMERA);
+                        } else {
+                            goCamera();
+                        }
                     } else {
                         goCamera();
                     };
                     break;
                 case R.id.item_popupwindows_Photo:       //点击从相册中选择按钮
-                    Intent intent = new Intent(instence,
-                            AlbumActivity.class);
+                    Intent intent = new Intent(instence, AlbumActivity.class);
                     startActivity(intent);
                     break;
                 default:
@@ -239,15 +248,16 @@ public class input_confirm_complete_activity extends UI {
     @Override
     public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
         switch(permsRequestCode) {
-            case RESULT_CODE_STARTCAMERA:
-                boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                if (cameraAccepted) {
+            case PermissionUtils.CODE_CAMERA:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //开始调用摄像头
+                    LogUtil.i(TAG, "摄像头权限申请 成功。。。  ");
                     goCamera();
-                } else {
-                    Toast.makeText(input_confirm_complete_activity.this, "请到设置界面开启摄像头权限", Toast.LENGTH_SHORT).show();
-//                    showToast(input_confirm_complete_activity.this, "请到设置界面开启摄像头权限");
+                } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {//第一次点击拒绝授权
+                    PermissionUtils.confirmActivityPermission(this, permissions, PermissionUtils.CODE_CAMERA, getString(R.string.camera),false);
                 }
                 break;
+
         }
     }
     private void confirmComplete() {
@@ -358,6 +368,8 @@ public class input_confirm_complete_activity extends UI {
         super.onResume();
         adapter.notifyDataSetChanged();
     }
+
+
 
 
 }

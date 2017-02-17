@@ -29,7 +29,7 @@ import java.util.TimerTask;
  */
 public class LocationServices extends Service {
     //定位间隔时间(毫秒)
-    private static final long SLEEPTIME = 5*1000*60;
+    private static final long SLEEPTIME = 10*1000*60;
     private WakeLockUtil wakeLockUtil;
     //定位点信息
     public LatLng latlng;
@@ -98,7 +98,7 @@ public class LocationServices extends Service {
                             mLocationClient.start();
                             Log.d("tag", "mLocationClient.start()");
                             Log.d("tag", "mLocationClient=="+mLocationClient);
-                            Thread.sleep(SLEEPTIME);//15分钟后再次执行
+                            Thread.sleep(SLEEPTIME);//10分钟后再次执行
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

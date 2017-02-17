@@ -498,8 +498,8 @@ public class CaptureVideoActivity extends UI implements SurfaceHolder.Callback {
             Toast.makeText(this, R.string.start_camera_to_record_failed, Toast.LENGTH_SHORT).show();
             mediaRecorder.release();
             mediaRecorder = null;
-            camera.release();
             camera.setPreviewCallback(null);
+            camera.release();
             camera = null;
             return;
 
@@ -524,8 +524,8 @@ public class CaptureVideoActivity extends UI implements SurfaceHolder.Callback {
             mediaRecorder = null;
         }
         if (camera != null) {
-            camera.release();
             camera.setPreviewCallback(null);
+            camera.release();
             camera = null;
         }
 
@@ -670,8 +670,8 @@ public class CaptureVideoActivity extends UI implements SurfaceHolder.Callback {
             if (previewing) {
                 camera.stopPreview();
             }
-            camera.release();
             camera.setPreviewCallback(null);
+            camera.release();
             camera = null;
             previewing = false;
         }

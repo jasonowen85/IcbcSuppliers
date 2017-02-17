@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.grgbanking.supplier.R;
 import com.grgbanking.supplier.api.ApiHttpClient;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,7 @@ class CheckUpdateTask extends AsyncTask<Void, Void, String> {
                 String apkCode = data.getString(Constants.APK_VERSION_CODE);
 
                 String versionCode = AppUtils.getVersionCode(mContext);
-
+                LogUtil.i("CheckUpdate", "当前版本号: = "+ versionCode +  "  服务器最新版本号: = "+ apkCode);
                 if (apkCode.compareTo(versionCode) > 0) {
                     if (mType == Constants.TYPE_NOTIFICATION) {
                         showNotification(mContext, updateMessage, apkUrl);

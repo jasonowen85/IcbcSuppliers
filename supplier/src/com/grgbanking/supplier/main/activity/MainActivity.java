@@ -2,7 +2,10 @@ package com.grgbanking.supplier.main.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +19,7 @@ import com.grgbanking.supplier.R;
 import com.grgbanking.supplier.api.ServerApi;
 import com.grgbanking.supplier.common.dialog.CommonDialog;
 import com.grgbanking.supplier.common.dialog.DialogHelper;
+import com.grgbanking.supplier.common.util.PermissionUtils;
 import com.grgbanking.supplier.config.preference.Preferences;
 import com.grgbanking.supplier.login.LoginActivity;
 import com.grgbanking.supplier.login.LogoutHelper;
@@ -264,4 +268,5 @@ public class MainActivity extends UI implements View.OnClickListener {
 
         }
     }
+
 }

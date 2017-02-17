@@ -6,16 +6,22 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.grgbanking.supplier.R;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -51,33 +57,30 @@ public class DownloadService extends IntentService {
         try {
             URL url = new URL(urlStr);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
             urlConnection.setRequestMethod("GET");
             urlConnection.setDoOutput(false);
             urlConnection.setConnectTimeout(10 * 1000);
             urlConnection.setReadTimeout(10 * 1000);
+//            urlConnection.setRequestProperty("Accept-Encoding", "identity");
             urlConnection.setRequestProperty("Connection", "Keep-Alive");
             urlConnection.setRequestProperty("Charset", "UTF-8");
             urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
 
             urlConnection.connect();
-            long bytetotal = urlConnection.getContentLength();
+            long bytetotal = urlConnection.getContentLength();//1893171200;//
             long bytesum = 0;
             int byteread = 0;
             in = urlConnection.getInputStream();
             File dir = StorageUtils.getCacheDirectory(this);
             String apkName = urlStr.substring(urlStr.lastIndexOf("/") + 1, urlStr.length());
             File apkFile = new File(dir, apkName);
-            out = new FileOutputStream(apkFile);
+            out = new FileOutputStream(apkFile); //this.openFileOutput(apkName, Context.MODE_WORLD_READABLE);
             byte[] buffer = new byte[BUFFER_SIZE];
-
             int oldProgress = 0;
-
             while ((byteread = in.read(buffer)) != -1) {
                 bytesum += byteread;
                 out.write(buffer, 0, byteread);
-
-                int progress = (int) (bytesum * 100L / bytetotal);
+                int progress = (int)(bytesum * 100.0 / bytetotal);
                 // 如果进度与之前进度相等，则不更新，如果更新太频繁，否则会造成界面卡顿
                 if (progress != oldProgress) {
                     updateProgress(progress);
@@ -121,19 +124,55 @@ public class DownloadService extends IntentService {
 
 
     private void installAPk(File apkFile) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        //如果没有设置SDCard写权限，或者没有sdcard,apk文件保存在内存中，需要授予权限才能安装
-        try {
-            String[] command = {"chmod", "777", apkFile.toString()};
-            ProcessBuilder builder = new ProcessBuilder(command);
-            builder.start();
-        } catch (IOException ignored) {
+        if(Build.VERSION.SDK_INT < 23){
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            //如果没有设置SDCard写权限，或者没有sdcard,apk文件保存在内存中，需要授予权限才能安装
+            try {
+                String[] command = {"chmod", "777", apkFile.toString()};
+                ProcessBuilder builder = new ProcessBuilder(command);
+                builder.start();
+            } catch (IOException ignored) {
+            }
+            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else{  //6.0以上 直接打开文件
+//            String name = apkFile.getAbsolutePath();
+//            name.substring(name.lastIndexOf("/",name.lastIndexOf("."));
+//            String name2 = StorageUtils.getCacheDirectory(this).getAbsolutePath() + name.substring(name.lastIndexOf("/")+1, name.length());
+//            StorageUtils.getCacheDirectory(this).getAbsolutePath() +name.substring(name.lastIndexOf("/") + 1, name.length());
+//            File file = new File(ap);
+            LogUtil.e("test", apkFile.getAbsolutePath() );
+            if(apkFile.exists()){
+                openFile(apkFile,this);
+            }
         }
-        intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
 
+    }
+
+    private void openFile(File var0, Context var1) {
+        Intent var2 = new Intent();
+        var2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        var2.setAction("android.intent.action.VIEW");
+          /// /storage/emulated/0/Android/data/com.grgbanking.supplier/cache/CE4E7C6458244F1B8FD7A04A4B986AEC.apk
+//        String apkName = var0.getAbsolutePath().substring(var0.getAbsolutePath().lastIndexOf("/") + 1, var0.getAbsolutePath().length());
+        var2.setDataAndType(Uri.fromFile(var0), getMIMEType(var0));
+        try {
+            var1.startActivity(var2);
+        } catch (Exception var5) {
+            var5.printStackTrace();
+            Toast.makeText(var1, "没有找到打开此类文件的程序", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    private String getMIMEType(File var0) {
+        String var1 = "";
+        String var2 = var0.getName();
+        String var3 = var2.substring(var2.lastIndexOf(".") + 1, var2.length()).toLowerCase();
+        var1 = MimeTypeMap.getSingleton().getMimeTypeFromExtension(var3);
+        return var1;
     }
 
 }
