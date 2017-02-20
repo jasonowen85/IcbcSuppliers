@@ -231,14 +231,16 @@ public class input_workorder_baskfragment extends BaseFragment implements
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject obj) {
                 listView1.setResultSize(0);
                 listView1.onLoadComplete();
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String message, Throwable throwable) {
                 listView1.setResultSize(0);
                 listView1.onLoadComplete();
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -268,12 +270,14 @@ public class input_workorder_baskfragment extends BaseFragment implements
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject obj) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String message, Throwable throwable) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -303,12 +307,14 @@ public class input_workorder_baskfragment extends BaseFragment implements
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject obj) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String message, Throwable throwable) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -360,12 +366,14 @@ public class input_workorder_baskfragment extends BaseFragment implements
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject obj) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String message, Throwable throwable) {
-                Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
+                if(null != getActivity())
+                    Toast.makeText(getActivity(), "获取数据异常", Toast.LENGTH_SHORT).show();
             }
         });
     }
