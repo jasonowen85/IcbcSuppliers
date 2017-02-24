@@ -70,6 +70,7 @@ public class LoginActivity extends UI implements OnKeyListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final String KICK_OUT = "KICK_OUT";
+    private static final String SERVICE_ROLR = "20003";
     public userRole[] userRoles;
     public CharSequence[] userRolenames;
     private Button btn_login;  // ActionBar完成按钮
@@ -78,7 +79,6 @@ public class LoginActivity extends UI implements OnKeyListener {
     private ClearableEditTextWithIcon loginPasswordEdit;
     private ClearableEditTextWithIcon loginRoleEdit;
     private boolean isShowDialog = false;
-    private View loginLayout;
 
     private AbortableFuture<LoginInfo> loginRequest;
 
@@ -108,22 +108,18 @@ public class LoginActivity extends UI implements OnKeyListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            if(PermissionUtils.lacksPermissions(this, PermissionUtils.requestPermissions)){
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (lacksPermission(PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)){
 //                List<String> requestPermission = new ArrayList<String>();
-//                for(String permission : PermissionUtils.requestPermissions){
-//                    if(lacksPermission(permission)){
+//                for (String permission : necessaryPermissions) {
+//                    if (lacksPermission(permission)) {
 //                        requestPermission.add(permission);
 //                    }
 //                }
 //                ActivityCompat.requestPermissions(this,
-//                        requestPermission.toArray(new String[requestPermission.size()]), PERMISSION_REQUEST_CODE); // 请求权限
+//                       requestPermission.toArray(new String[requestPermission.size()]), PermissionUtils.CODE_READ_EXTERNAL_STORAGE);
 //                requestPermission.clear();
-//            }
-//        }
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (PermissionUtils.lacksPermission(this, PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)) {
-                //缺少必要权限 不让用户登陆
                 ActivityCompat.requestPermissions(this,
                         new String[]{PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE}, PermissionUtils.CODE_READ_EXTERNAL_STORAGE);
                 isShowDialog = true;
@@ -178,13 +174,30 @@ public class LoginActivity extends UI implements OnKeyListener {
         //判断是否有sd权限 否则不让登陆
         boolean b = ActivityCompat.shouldShowRequestPermissionRationale(this
                 , PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE );
-        Log.e("jiang", "onResume" + "运行  222" + b );
-        if(!isShowDialog && !b && PermissionUtils.lacksPermission(this, PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)){
-            //弹出对话框 授权;
-            showDialogPermission();
-            Log.e("jiang", "onResume" + "再次授权" );
-        }
+        boolean c = ActivityCompat.shouldShowRequestPermissionRationale(this
+                , PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION );
+        Log.i("jiang", "onResume" + "授权结果  sd = " + b + "授权结果  定位 = " + c + "  dialog=   " + isShowDialog );
+        if(!isShowDialog && Build.VERSION.SDK_INT >= 23 ){
+//            if(lacksPermission(PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)
+//                    && lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)) {
+//                //缺少必要权限;
+//                showDialogPermission("sd和位置 必要");
+//            }else if(lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)){
+//                showDialogPermission(getString(R.string.location));
+//                Log.i("jiang", "onResume" + "再次授权  定位 showdialgo");
+//            }else
+            if(!b && lacksPermission(PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)){
+                showDialogPermission(getString(R.string.readSDcard));
+                Log.i("jiang", "onResume" + "再次授权  sd  showdialgo");
+            }
 
+            if(!c && lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)) {
+                if(!TextUtils.isEmpty(loginAccountEdit.getText())){
+                    needPermissionLocation();
+                    Log.i("jiang", "onResume" + "再次授权  定位 showdialgo");
+                }
+            }
+        }
     }
 
     // 判断是否缺少权限
@@ -194,41 +207,6 @@ public class LoginActivity extends UI implements OnKeyListener {
     }
 
 
-    private PermissionUtils.PermissionGrant mPermissionGrant = new PermissionUtils.PermissionGrant() {
-        @Override
-        public void onPermissionGranted(int requestCode) {
-            switch (requestCode) {
-
-                case PermissionUtils.CODE_GET_ACCOUNTS:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_GET_ACCOUNTS", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_READ_PHONE_STATE:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_READ_PHONE_STATE", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_CALL_PHONE:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_CALL_PHONE", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_CAMERA:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_CAMERA", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_ACCESS_FINE_LOCATION", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_ACCESS_COARSE_LOCATION:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_ACCESS_COARSE_LOCATION", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_READ_EXTERNAL_STORAGE:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_READ_EXTERNAL_STORAGE", Toast.LENGTH_SHORT).show();
-                    break;
-                case PermissionUtils.CODE_WRITE_EXTERNAL_STORAGE:
-                    Toast.makeText(LoginActivity.this, "Result Permission Grant CODE_WRITE_EXTERNAL_STORAGE", Toast.LENGTH_SHORT).show();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     /**
      * Callback received when a permissions request has been completed.
      */
@@ -237,17 +215,39 @@ public class LoginActivity extends UI implements OnKeyListener {
         switch(permsRequestCode) {
             case PermissionUtils.CODE_READ_EXTERNAL_STORAGE:
                 isShowDialog = false;
+                Log.i("jiang", "grantResults   size = " + grantResults.length);
                 if(grantResults.length >=1) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    } else {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                         if (ActivityCompat.shouldShowRequestPermissionRationale(this
                                 , permissions[0])) {//点击拒绝，再次弹出
                             ActivityCompat.requestPermissions(this, permissions, PermissionUtils.CODE_READ_EXTERNAL_STORAGE);
                             isShowDialog = true;
                         } else if(!isShowDialog) { // 选择不再询问，并点击拒绝，弹出提示框
-                            Log.e("jiang", "toast" + "运行");
-                            showDialogPermission();
+                            Log.i("jiang", "toast" + "运行");
+//                            if(lacksPermission(PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)
+//                                    && lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)){
+//                                //缺少必要权限;
+//                                showDialogPermission(getString(R.string.need_sd_and_location));
+//                            }else if(lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)) {
+//                                showDialogPermission(getString(R.string.location));
+//                            }else
+                            if(lacksPermission(PermissionUtils.PERMISSION_WRITE_EXTERNAL_STORAGE)){
+                                showDialogPermission(getString(R.string.readSDcard));
+                            }
+                        }
+                    }
+                }
+                break;
+            case PermissionUtils.CODE_ACCESS_FINE_LOCATION:
+                isShowDialog = false;
+                if(grantResults.length >=1) {
+                    if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this
+                                , permissions[0])) {//点击拒绝，再次弹出
+                            ActivityCompat.requestPermissions(this, permissions, PermissionUtils.CODE_ACCESS_FINE_LOCATION);
+                            isShowDialog = true;
+                        } else if(!isShowDialog) { // 选择不再询问
+                            showDialogPermission(getString(R.string.location_info));
                         }
                     }
                 }
@@ -255,16 +255,27 @@ public class LoginActivity extends UI implements OnKeyListener {
         }
     }
 
-    public void showDialogPermission() {
+    private void needPermissionLocation(){
+        if(TextUtils.isEmpty(Preferences.getUserRoleids())) return;
+        Log.i("jiang", "ids =   " + Preferences.getUserRoleids())  ;
+        if(Preferences.getUserRoleids().contains(SERVICE_ROLR) &&
+                lacksPermission(PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION)){
+            ActivityCompat.requestPermissions(LoginActivity.this,
+                    new String[]{PermissionUtils.PERMISSION_ACCESS_FINE_LOCATION}, PermissionUtils.CODE_ACCESS_FINE_LOCATION);
+            isShowDialog = true;
+        }
+    }
+
+    private void showDialogPermission(String permissName) {
         isShowDialog = true;
-        Log.e("jianglu", "马上显示dialog");
+        Log.i("jianglu", "马上显示dialog");
         EasyAlertDialogHelper.createOkCancelDiolag(this, getString(R.string.helps),
-                getString(R.string.readSDcard) + getString(R.string.string_help_text),
-                getString(R.string.settings), getString(R.string.quit_apk), true, new EasyAlertDialogHelper.OnDialogActionListener() {
+                permissName + getString(R.string.string_help_text),
+                getString(R.string.settings), getString(R.string.quit_apk), false, new EasyAlertDialogHelper.OnDialogActionListener() {
                     @Override
                     public void doCancelAction() {
                         //返回上一个界面;
-                        Log.e("jianglu", "马上返回上一个界面 退出应用了");
+                        Log.i("jianglu", "马上返回上一个界面 退出应用了");
                         isShowDialog = false;
                         finish();
                     }
@@ -329,6 +340,7 @@ public class LoginActivity extends UI implements OnKeyListener {
                             loginRoleEdit.setText(parent.getAdapter().getItem(position).toString());
                             Preferences.saveUserRole(userRoles[position].getCode());
                             dialog.dismiss();
+                            needPermissionLocation();
                         }
                     });
                     dialog.show();
@@ -349,6 +361,7 @@ public class LoginActivity extends UI implements OnKeyListener {
                         userRolenames  = null;
                         if(loginRoleEdit.getVisibility() == View.VISIBLE){
                             loginRoleEdit.setVisibility(View.GONE);
+                            Log.i("jiang", "角色隐藏");
                         }
                     }
                 } else {
@@ -386,6 +399,8 @@ public class LoginActivity extends UI implements OnKeyListener {
     };
 
     private void getRoles(String userId) {
+        if(TextUtils.isEmpty(loginAccountEdit.getText())) return;
+
         ServerApi.getRoles(userId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -424,19 +439,23 @@ public class LoginActivity extends UI implements OnKeyListener {
                         if (ids.length == 1) {
                             loginRoleEdit.setVisibility(View.GONE);
                             Preferences.saveUserRole(idstr);
+                            //服务工程师角色 定位权限申请;
+                            needPermissionLocation();
                         } else if (ids.length > 1) {
-                            loginRoleEdit.setVisibility(View.VISIBLE);
+                                loginRoleEdit.setVisibility(View.VISIBLE);
                             final CommonDialog dialog = DialogHelper.getPinterestDialogCancelable(LoginActivity.this);
-                            dialog.setTitle("选择角色");
-                            dialog.setNegativeButton(R.string.cancel, null);
-                            dialog.setItemsWithoutChk(userRolenames, new AdapterView.OnItemClickListener() {
+                                dialog.setTitle("选择角色");
+                                dialog.setNegativeButton(R.string.cancel, null);
+                                dialog.setItemsWithoutChk(userRolenames, new AdapterView.OnItemClickListener() {
 
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    loginRoleEdit.setText(parent.getAdapter().getItem(position).toString());
-                                    Preferences.saveUserRole(userRoles[position].getCode());
-                                    dialog.dismiss();
-                                }
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        loginRoleEdit.setText(parent.getAdapter().getItem(position).toString());
+                                        Preferences.saveUserRole(userRoles[position].getCode());
+                                        dialog.dismiss();
+                                        needPermissionLocation();
+
+                                    }
                             });
                             dialog.show();
                         }

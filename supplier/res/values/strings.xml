@@ -260,12 +260,21 @@
     <string name="quit">退出</string>
     <string name="quit_apk">退出应用</string>
     <string name="settings">设置</string>
-    <string name="string_help_text">权限没有被授权 无法正常使用 \n请点击 "设置"-"权限"-打开所需权限</string>
+    <string name="string_help_text">权限没有被授权 应用无法正常使用 \n请点击 "设置"-"权限"-打开所需权限</string>
     <string name="camera">相机</string>
     <string name="recordAudio">录音</string>
     <string name="callphone">打电话</string>
     <string name="readSDcard">读取存储卡</string>
     <string name="location">定位</string>
+    <string name="location_info">服务工程师角色 位置</string>
+    <string name="need_sd_and_location">读取sd 以及 读取位置 </string>
+    <string name="cancle_order">撤单</string>
+    <string name="close_order">关闭工单</string>
+    <string name="confirm_receive">确认收货</string>
+    <string name="confirm_cancle_order">确认是否撤单</string>
+    <string name="confirm_close_order">确认是否关闭工单</string>
+    <string name="confirm_receive_goods">确认收到货物</string>
+    <string name="confirm_complete_order">确认是否完成设备维修</string>
 
 
     <string name="address_tuning">地点微调</string>

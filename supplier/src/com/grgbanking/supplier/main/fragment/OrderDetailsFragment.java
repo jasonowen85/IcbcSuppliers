@@ -659,9 +659,9 @@ public class OrderDetailsFragment extends Fragment {
                         //EventBus.getDefault().post(new EventLatLng(mWorkOrder,arrs,voiceUrl));
                         tv_therepair_name.setText(jsonObj.getString("userName"));
                         tv_contact_phone.setText(jsonObj.getString("phone"));
-                        String schedule = jsonObj.getString("schedule");
-                        String state = jsonObj.getString("state");
-                        setButtons(state, schedule);
+//                        String schedule = jsonObj.getString("schedule");
+//                        String state = jsonObj.getString("state");
+//                        setButtons(state, schedule);
                         //getTrackingData();
                     } catch (JSONException e) {
                         e.printStackTrace();

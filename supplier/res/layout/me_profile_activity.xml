@@ -62,7 +62,6 @@
                     android:layout_height="65dp"
                     android:layout_below="@id/user_head_image"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="6dp"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -71,7 +70,7 @@
                         android:layout_height="0dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="1"
-                        android:gravity="center_horizontal"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                         <TextView
@@ -89,6 +88,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:layout_gravity="center_horizontal"
+                        android:visibility="gone"
                         android:textColor="@color/color_black_ff666666"
                         android:textSize="16sp" />
 
