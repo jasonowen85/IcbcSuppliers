@@ -253,34 +253,34 @@ public class OrderStateFragment extends Fragment {
                 }
                 break;
             case HAVEINHAND: //进行中002
-                if (Preferences.getUserRole().equals("20002")) { //服务工程师   ---  action2 确认完成
-                    if (schedule.equals("5")){
-                        iv_action2.setVisibility(View.VISIBLE);
-                        iv_action2.setImageResource(R.drawable.button11);//签到
-                        iv_action2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(mContext,  SignInActivity.class);
-                                intent.putExtra("id",mOrderId);
-                                startActivity(intent);
-                                iv_action2.setClickable(false);
-                                getActivity().finish();
-                            }
-                        });
-                    }else if (schedule.equals("6")){
-                        iv_action2.setVisibility(View.VISIBLE);
-                        iv_action2.setImageResource(R.drawable.button12);//确认完成
-                        iv_action2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(mContext, input_confirm_complete_activity.class);
-                                intent.putExtra("jobOrderId", mOrderId);
-                                startActivity(intent);
-                                iv_action2.setClickable(false);
-                                getActivity().finish();
-                            }
-                        });
-                    }
+                if (Preferences.getUserRole().equals("20002")) { //服务主管
+//                    if (schedule.equals("5")){
+//                        iv_action2.setVisibility(View.VISIBLE);
+//                        iv_action2.setImageResource(R.drawable.button11);//签到
+//                        iv_action2.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Intent intent = new Intent(mContext,  SignInActivity.class);
+//                                intent.putExtra("id",mOrderId);
+//                                startActivity(intent);
+//                                iv_action2.setClickable(false);
+//                                getActivity().finish();
+//                            }
+//                        });
+//                    }else if (schedule.equals("6")){
+//                        iv_action2.setVisibility(View.VISIBLE);
+//                        iv_action2.setImageResource(R.drawable.button12);//确认完成
+//                        iv_action2.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                Intent intent = new Intent(mContext, input_confirm_complete_activity.class);
+//                                intent.putExtra("jobOrderId", mOrderId);
+//                                startActivity(intent);
+//                                iv_action2.setClickable(false);
+//                                getActivity().finish();
+//                            }
+//                        });
+//                    }
                 } else if (Preferences.getUserRole().equals("20003")) { //服务工程师
                     if (schedule.equals("5")){
                         iv_action2.setVisibility(View.VISIBLE);
