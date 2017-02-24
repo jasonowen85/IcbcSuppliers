@@ -271,10 +271,10 @@
     <string name="cancle_order">撤单</string>
     <string name="close_order">关闭工单</string>
     <string name="confirm_receive">确认收货</string>
-    <string name="confirm_cancle_order">确认是否撤单</string>
-    <string name="confirm_close_order">确认是否关闭工单</string>
-    <string name="confirm_receive_goods">确认收到货物</string>
-    <string name="confirm_complete_order">确认是否完成设备维修</string>
+    <string name="confirm_cancle_order">是否撤单</string>
+    <string name="confirm_close_order">是否关闭工单</string>
+    <string name="confirm_receive_goods">收到货物</string>
+    <string name="confirm_complete_order">是否完成设备维修</string>
 
 
     <string name="address_tuning">地点微调</string>
